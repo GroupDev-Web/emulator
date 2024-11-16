@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 10 Setup Simulator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 60%;
+            margin: 50px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        .button {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        #steps-container {
+            display: none;
+            margin-top: 20px;
+        }
+        #partition-container {
+            display: none;
+            margin-top: 20px;
+        }
+        .progress {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 5px;
+        }
+        .progress-bar {
+            width: 0;
+            height: 20px;
+            background-color: #4CAF50;
+            border-radius: 5px;
+        }
+        .log {
+            margin-top: 20px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            font-size: 14px;
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .step-button {
+            margin: 5px;
+            padding: 5px 10px;
+            font-size: 14px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .step-button:hover {
+            background-color: #0b7dda;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Windows 10 Setup Simulator</h1>
+        
+        <!-- Main menu for choosing customization or normal installation -->
+        <button class="button" onclick="chooseSetupType()">1. Customize setup</button>
+        <button class="button" onclick="installNormally()">2. Install normally</button>
+
+        <!-- Partition selection -->
+        <div id="partition-container">
+            <h2>Select a Partition to Install Windows 10:</h2>
+            <select id="partition-select">
+                <option value="C:">C:</option>
+                <option value="D:">D:</option>
+                <option value="E:">E:</option>
+                <option value="F:">F:</option>
+            </select>
+            <button class="button" onclick="selectPartition()">Next</button>
+        </div>
+
+        <!-- Setup steps selection for customization -->
+        <div id="steps-container">
+            <h2>Select Setup Steps:</h2>
+            <div id="steps-options">
+                <button class="step-button" onclick="selectStep('Initializing setup')">Initializing setup</button>
+                <button class="step-button" onclick="selectStep('Checking system requirements')">Checking system requirements</button>
+                <button class="step-button" onclick="selectStep('Copying files')">Copying files</button>
+                <button class="step-button" onclick="selectStep('Installing updates')">Installing updates</button>
+                <button class="step-button" onclick="selectStep('Setting up features')">Setting up features</button>
+                <button class="step-button" onclick="selectStep('Configuring settings')">Configuring settings</button>
+                <button class="step-button" onclick="selectStep('Finalizing installation')">Finalizing installation</button>
+            </div>
+            <button class="button" onclick="startInstallation()">Start Installation</button>
+        </div>
+
+        <!-- Log and progress bar -->
+        <div class="log" id="log"></div>
+        <div class="progress">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </div>
+
+    <script>
+        let selectedPartition = '';
+        let selectedSteps = [];
+        let logContainer = document.getElementById('log');
+        let progressBar = document.getElementById('progress-bar');
+        let stepsContainer = document.getElementById('steps-container');
+        let partitionContainer = document.getElementById('partition-container');
+
+        // Show partition selection if customizing setup
+        function chooseSetupType() {
+            document.querySelector('h1').innerText = "Windows 10 Setup Simulator - Customize Setup";
+            partitionContainer.style.display = 'block';
+        }
+
+        // Handle normal installation (no customization)
+        function installNormally() {
+            selectedPartition = 'C:';
+            selectedSteps = [
+                'Initializing setup',
+                'Checking system requirements',
+                'Copying files',
+                'Installing updates',
+                'Setting up features',
+                'Configuring settings',
+                'Finalizing installation'
+            ];
+            startInstallation();
+        }
+
+        // Select partition and proceed to setup steps if customizing
+        function selectPartition() {
+            selectedPartition = document.getElementById('partition-select').value;
+            partitionContainer.style.display = 'none';
+            stepsContainer.style.display = 'block';
+            logContainer.innerText = `Selected Partition: ${selectedPartition}\n`;
+        }
+
+        // Allow user to select steps for installation
+        function selectStep(step) {
+            if (!selectedSteps.includes(step)) {
+                selectedSteps.push(step);
+                logContainer.innerText += `Added Step: ${step}\n`;
+            } else {
+                logContainer.innerText += `Step already selected: ${step}\n`;
+            }
+        }
+
+        // Start installation based on selected partition and steps
+        function startInstallation() {
+            stepsContainer.style.display = 'none';
+            logContainer.innerText += `\nStarting the installation on partition ${selectedPartition}...\n`;
+            simulateInstallation();
+        }
+
+        // Simulate the installation with delays
+        function simulateInstallation() {
+            let totalSteps = selectedSteps.length;
+            let completedSteps = 0;
+            let stepIndex = 0;
+
+            function nextStep() {
+                if (stepIndex < selectedSteps.length) {
+                    let currentStep = selectedSteps[stepIndex];
+                    logContainer.innerText += `\nStep ${stepIndex + 1}: ${currentStep}\n`;
+                    updateProgressBar(++completedSteps, totalSteps);
+                    stepIndex++;
+                    setTimeout(nextStep, 2000);  // Simulate a delay for each step
+                } else {
+                    logContainer.innerText += "\nWindows 10 setup has been completed successfully!";
+                }
+            }
+
+            nextStep();
+        }
+
+        // Update progress bar
+        function updateProgressBar(completed, total) {
+            let percentage = (completed / total) * 100;
+            progressBar.style.width = percentage + '%';
+        }
+    </script>
+
+</body>
+</html>
